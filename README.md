@@ -1,3 +1,5 @@
+# FULL BUILD WITH ASSETS: https://drive.google.com/drive/folders/1wpphRSlMAUXdGhpu-0Pnr4csh4WVa9r0?usp=sharing
+
 # Lead Rush HDRP
 
 Lead Rush HDRP is a research FPS built for experiments on framerate, latency spikes, and graphical fidelity. It runs on Unity's High Definition Render Pipeline.
