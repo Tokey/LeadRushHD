@@ -9,7 +9,8 @@ Rounds and conditions are set from CSV files. Everything the player does is logg
 ---
 
 ## Multiple enemies for stress research
-Multiple enemies are set per round in Data/Configs/LatinMap.csv. Each row is one condition, and the last three columns control them: EnemyCount is how many stay alive at once, and EnemySpeedMin / EnemySpeedMax set the speed range. Speeds are spread evenly across that range, so 4, 1, 4 gives four enemies running at exactly 1, 2, 3 and 4 units per second. Set min equal to max and every enemy runs at that one speed — 3, 3, 3 gives three enemies all at speed 3. Each enemy holds a slot in the spread, so when one dies its replacement comes back at the same speed and the mix stays the same for the whole round. Point a round at the condition by putting its row number in RoundConfig.csv.
+
+Multiple enemies are set per round in `Data/Configs/LatinMap.csv`. Each row is one condition. The last three columns control the enemies: `EnemyCount` is how many stay alive at once, and `EnemySpeedMin` / `EnemySpeedMax` set the speed range. Speeds are spread evenly across that range, so `4, 1, 4` gives four enemies running at 1, 2, 3 and 4 units per second. Set min equal to max and every enemy runs at that speed: `3, 3, 3` gives three enemies at speed 3. Each enemy holds a slot in the spread, so when one dies its replacement comes back at the same speed and the mix stays the same for the whole round. Point a round at the condition by putting its row number in `RoundConfig.csv`.
 
 ## Gameplay Overview
 
@@ -18,7 +19,7 @@ Multiple enemies are set per round in Data/Configs/LatinMap.csv. Each row is one
 - **Damage:** Only headshots hurt enemies. A headshot does 5x the weapon's bullet damage. Enemy health comes from `EnemyHealthGlobal`. Body shots score a miss.
 - **Death:** Touching an enemy kills the player. The player respawns and all enemies are cleared.
 - **Direction cues:** Yellow bars on the screen edges flash toward nearby enemies. Each edge tracks the closest enemy on that side. They flash faster and brighter as an enemy closes in, with a beep.
-- **Minimap:** Small radar in the bottom left. Up is where the player is facing. Enemies past the edge of its range stick to the rim in a dimmer colour.
+- **Minimap:** Radar in the bottom left. Up is where the player is facing. Enemies past the edge of its range stick to the rim in a dimmer colour.
 - **Rounds:** A session is a sequence of rounds. Each round has its own framerate, spike, graphics, and enemy settings.
 - **After each round:** The player answers the QoE sliders, then an acceptability yes/no. Logs are written at that point.
 
@@ -39,6 +40,7 @@ Multiple enemies are set per round in Data/Configs/LatinMap.csv. Each row is one
 - Download a release.
 - Run `LeadRush.exe`.
 - `Data/` must sit next to the exe. The game reads configs from it and writes logs into it.
+- Builds copy `Data/Configs` and the top level `Data/*.csv` feeds next to the exe on their own. See `Assets/InGameScripts/Editor/CopyDataOnBuild.cs`.
 
 ---
 
@@ -117,7 +119,7 @@ Column count sets how many rounds a session has.
 
 ### 5. `LatinSquare.csv`
 
-Only read when `IsFTStudy` is FALSE. Each row is a list of target framerates for one session. Two practice rounds are added at the front. Everything else falls back to defaults.
+Only read when `IsFTStudy` is FALSE. Each row is a list of target framerates for one session. Everything else falls back to defaults.
 
 ### How a session is built
 
@@ -125,6 +127,75 @@ Only read when `IsFTStudy` is FALSE. Each row is a list of target framerates for
 2. Pick the matching row of `RoundConfig.csv`.
 3. Walk that row left to right. Each value indexes `LatinMap.csv`.
 4. That gives the round order for the session.
+
+---
+
+## Driving the game from an external process
+
+The game can be run one round per launch from a wrapper in any language. Conditions are CSV files read at startup, and they sit next to the exe rather than inside the build.
+
+Set `IsFTStudy` to TRUE and give `RoundConfig.csv` one row with one column. `totalRoundNumber` is then 1. The build plays that round and, once the player has answered the QoE and acceptability prompts, writes its logs, increments `SessionID.csv`, and quits. The wrapper does not need to kill the process.
+
+One trial is:
+
+1. Write the condition into `LatinMap.csv`.
+2. Launch the exe.
+3. Wait for it to exit.
+4. Read the new files in `Data/Logs/`.
+
+Set the working directory to the folder holding the exe. Config and log paths are relative to the working directory, not to the exe.
+
+`SessionID` is incremented on every exit and written into both the log filenames and every log row, so it can be used as the trial counter. Leave it to count up, or rewrite it if the wrapper sets the numbering. With one row in `RoundConfig.csv`, `latinRow` stays 1 whatever `SessionID` reaches. The `runID` in each filename is new on every launch, so repeat trials do not overwrite each other.
+
+### Varying difficulty
+
+Difficulty comes from the enemy columns of the `LatinMap.csv` row. `EnemyCount` sets how many enemies are alive at once, and `EnemySpeedMin` / `EnemySpeedMax` set the speed spread across them. Raising the count, raising the speeds, or widening the range each make the round harder. `EnemyHealthGlobal` and `RoundDurationS` in `GlobalConfig.csv` also change it.
+
+A three level ladder:
+
+| Level | EnemyCount | EnemySpeedMin | EnemySpeedMax |
+|---|---|---|---|
+| Low | 1 | 2.5 | 2.5 |
+| Medium | 3 | 3.0 | 4.5 |
+| High | 6 | 4.0 | 7.0 |
+
+### Example wrapper
+
+```python
+import csv, subprocess, pathlib
+
+GAME = pathlib.Path("build/LeadRush.exe")
+CFG  = GAME.parent / "Data" / "Configs"
+
+LATIN_MAP_HEADER = [
+    "TargetFPS", "SpikeMagnitudeMS", "AimSpike", "ReloadSpike", "MouseSpike",
+    "EnemySpawnSpike", "HighResolutionMode", "HDTextureMode", "HDRISkybox",
+    "AdvancedLighting", "PlayerVFX", "EnemyVFX", "EnvironmentVFX",
+    "EnemyCount", "EnemySpeedMin", "EnemySpeedMax",
+]
+
+def write_condition(enemy_count, speed_min, speed_max, fps=120):
+    row = [fps, 0, "FALSE", "FALSE", "FALSE", "FALSE",
+           "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE",
+           enemy_count, speed_min, speed_max]
+    with open(CFG / "LatinMap.csv", "w", newline="") as f:
+        csv.writer(f).writerows([LATIN_MAP_HEADER, row])
+    # One row, one column: a session of one round, using LatinMap row 1.
+    with open(CFG / "RoundConfig.csv", "w", newline="") as f:
+        csv.writer(f).writerows([["Round1"], [1]])
+
+for level in [(1, 2.5, 2.5), (3, 3.0, 4.5), (6, 4.0, 7.0)]:
+    write_condition(*level)
+    subprocess.run([str(GAME)], cwd=GAME.parent)   # returns when the round ends
+```
+
+The header row is optional. A first cell that is neither a number nor a bool is treated as a header and skipped.
+
+### Manual steps
+
+Two points in a round take input from the keyboard. `Tab` starts the round, and the QoE sliders and the acceptability yes/no have to be answered before the round is logged and the game exits. A participant is present in a stress study, so this is usually not a problem. A wrapper that runs without one has to send the input itself, or `GameUI` needs a change to auto-advance.
+
+The round log and player log are only written in `YesPressed()` / `NoPressed()`. A round ended any other way, including killing the process, produces no data. The enemy log is the exception and is written as enemies leave.
 
 ---
 
@@ -215,7 +286,7 @@ One row per round.
 | QoE_Q1 … QoE_Qn | float | 1–5 | One column per QoE question |
 | Acceptability | bool | TRUE/FALSE | Player said the round was acceptable |
 
-The averages divide by kills. If the player got no kills the divisor is clamped to 1, so those columns read as the raw totals rather than as `NaN`.
+The averages divide by kills. If the player got no kills the divisor is clamped to 1, so those columns read as the totals rather than as `NaN`.
 
 `QoE_Qn` column count comes from `numberOfSliderQuestions` on the GameUI component in the scene, not from a config file.
 
@@ -259,8 +330,8 @@ Columns 1–20 are the round condition, repeated on every row so the file stands
 | PlayerRotY | float | | Rotation quaternion |
 | PlayerRotZ | float | | Rotation quaternion |
 | PlayerRotW | float | | Rotation quaternion |
-| PlayerYawDeg | float | degrees | Euler yaw, for convenience |
-| PlayerPitchDeg | float | degrees | Euler pitch, for convenience |
+| PlayerYawDeg | float | degrees | Euler yaw |
+| PlayerPitchDeg | float | degrees | Euler pitch |
 | IsADS | bool | | Aiming down sights this frame |
 | FrameTimeMS | double | ms | Frame time. On a spike frame this is the stall length |
 | EnemyCount | int | | Enemies alive this frame |
@@ -286,7 +357,7 @@ Columns 1–20 are the same round condition block as the player log.
 | EventTime | string | timestamp | When this enemy left |
 | EnemyID | int | | Unique per round, counts from 1 |
 | Outcome | string | | `Killed`, `RoundReset`, or `PlayerDeath` |
-| EnemySpeed | float | units/sec | Speed this enemy actually ran at |
+| EnemySpeed | float | units/sec | Speed this enemy ran at |
 | EnemiesAliveAtEvent | int | | Other enemies alive at the time |
 | SpawnRoundElapsedS | float | seconds | When it spawned, from round start |
 | DespawnRoundElapsedS | float | seconds | When it left, from round start |
@@ -329,7 +400,7 @@ Columns 1–20 are the same round condition block as the player log.
 
 ## Notes
 
-- The round log lists its columns in a slightly different order to the other two. `ConfigIndex` sits later, and it carries two timestamps near the front. The fields are the same.
+- The round log lists its columns in a different order to the other two. `ConfigIndex` sits later, and it carries two timestamps near the front. The fields are the same.
 - Enemies respawn in a batch once the spawn timer elapses, so the round holds a steady enemy count. Turn off `spawnBatchOnRoundStart` on EnemyManager to have them trickle in one at a time.
-- The minimap is a component. It builds its own canvas at runtime and finds the player on its own. It adds a small amount of UI work per frame, so turn it off with `showMinimap` if a condition needs a clean frametime trace.
+- The minimap is a component. It builds its own canvas at runtime and finds the player on its own. It adds UI work per frame, so turn it off with `showMinimap` if a condition needs a clean frametime trace.
 - Set `SessionID.csv` back to `1` before a fresh run of participants.
