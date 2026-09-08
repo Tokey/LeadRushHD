@@ -1,4 +1,4 @@
-# FULL BUILD WITH ASSETS: https://drive.google.com/drive/folders/1wpphRSlMAUXdGhpu-0Pnr4csh4WVa9r0?usp=sharing
+# FULL BUILD WITH ASSETS: [Google Drive Link](https://drive.google.com/file/d/1sWUaGIs_2y80WaSoV6JlbyUcZPEpMse-/view?usp=sharing)
 
 # Lead Rush HDRP
 
