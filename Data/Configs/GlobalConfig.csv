@@ -1,0 +1,2 @@
+RoundDurationS,IsFTStudy,AimSpikeDelayS,MouseSpikeDelayS,MouseSpikeDegreeThreshold,EnemySpeedGlobal,EnemyHealthGlobal,ReticleSizeMultiplier,OnHitScore,OnMissScore,OnKillScore,OnDeathScore,DefaultEnemyCount,DefaultEnemySpeedMin,DefaultEnemySpeedMax
+60,TRUE,1,1,1.5,3.1,100,1.3,10,-1,100,-100,1,3.1,3.1

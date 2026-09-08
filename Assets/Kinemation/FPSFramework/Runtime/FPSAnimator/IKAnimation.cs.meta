@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 369d780791cd4c92951ecc7fe87dd53d
+timeCreated: 1689320079
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Runtime/FPSAnimator/IKAnimation.cs
+  uploadId: 641489

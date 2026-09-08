@@ -104,3 +104,34 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# ---------------------------------------------------------------------------
+# Keeping this repo LFS-free
+#
+# GitHub rejects any single file over 100 MB and any push over 2 GB, which is
+# what normally forces Git LFS on a Unity project. The rules below drop the
+# third-party art packs that account for ~5.3 GB of Assets, leaving the repo
+# around 700 MB with no file over the 100 MB hard limit. Nothing here is
+# authored by this project - re-import each pack from the Asset Store or
+# Package Manager after cloning:
+#
+#   Assets/LeartesStudios     Abandoned Factory environment   ~4.2 GB
+#   Assets/UnityTechnologies  Unity HDRI Pack + Particle Pack ~800 MB
+#   Assets/AllSkyFree         AllSky Free skyboxes            ~320 MB
+#
+# Each folder's sibling .meta is ignored alongside it, otherwise Unity reports
+# metadata pointing at an asset that is not on disk.
+# ---------------------------------------------------------------------------
+/[Aa]ssets/LeartesStudios/
+/[Aa]ssets/LeartesStudios.meta
+/[Aa]ssets/UnityTechnologies/
+/[Aa]ssets/UnityTechnologies.meta
+/[Aa]ssets/AllSkyFree/
+/[Aa]ssets/AllSkyFree.meta
+
+# Experiment output, regenerated on every run. Data/Configs stays tracked so
+# the default configs ship with the repo and with each build.
+/[Dd]ata/[Ll]ogs/
+
+# Screenshot output from HDRPFidelityScreenshotRunner.
+/HDRP_Screenshots/

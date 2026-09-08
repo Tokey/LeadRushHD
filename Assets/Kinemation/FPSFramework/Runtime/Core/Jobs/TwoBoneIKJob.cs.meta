@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: fb8854114e294ff8822113bf4d6c7a58
+timeCreated: 1702921109
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Runtime/Core/Jobs/TwoBoneIKJob.cs
+  uploadId: 641489

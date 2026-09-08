@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 2cb25e6a21ee4661a8e13ea371946734
+timeCreated: 1682102233
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Runtime/Camera/FPSCamera.cs
+  uploadId: 641489

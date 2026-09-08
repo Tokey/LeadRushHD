@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: cbc3528a7b974f71b1157cbf75d6c28c
+timeCreated: 1698386563
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Editor/Core/BlendAssetEditor.cs
+  uploadId: 641489

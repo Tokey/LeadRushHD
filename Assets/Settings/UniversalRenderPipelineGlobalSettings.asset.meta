@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b4601fef2e2961d4fbb967efb5b27a2e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 259090
+  packageName: Stylized Pirate Port City (Modular)
+  packageVersion: 1.0
+  assetPath: Assets/Settings/UniversalRenderPipelineGlobalSettings.asset
+  uploadId: 607776

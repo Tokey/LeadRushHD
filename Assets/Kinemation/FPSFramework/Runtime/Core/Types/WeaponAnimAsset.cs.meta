@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 3399879f743e4df2b0f3e0021bea0961
+timeCreated: 1689229868
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Runtime/Core/Types/WeaponAnimAsset.cs
+  uploadId: 641489

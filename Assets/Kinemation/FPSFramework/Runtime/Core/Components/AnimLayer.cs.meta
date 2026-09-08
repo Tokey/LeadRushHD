@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 91f5f43031344fa398c7c3d972d11a39
+timeCreated: 1698337547
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238641
+  packageName: FPS Animation Framework
+  packageVersion: 3.5.2
+  assetPath: Assets/Kinemation/FPSFramework/Runtime/Core/Components/AnimLayer.cs
+  uploadId: 641489
