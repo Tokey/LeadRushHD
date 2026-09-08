@@ -8,6 +8,9 @@ Rounds and conditions are set from CSV files. Everything the player does is logg
 
 ---
 
+## Multiple enemies for stress research
+Multiple enemies are set per round in Data/Configs/LatinMap.csv. Each row is one condition, and the last three columns control them: EnemyCount is how many stay alive at once, and EnemySpeedMin / EnemySpeedMax set the speed range. Speeds are spread evenly across that range, so 4, 1, 4 gives four enemies running at exactly 1, 2, 3 and 4 units per second. Set min equal to max and every enemy runs at that one speed — 3, 3, 3 gives three enemies all at speed 3. Each enemy holds a slot in the spread, so when one dies its replacement comes back at the same speed and the mix stays the same for the whole round. Point a round at the condition by putting its row number in RoundConfig.csv.
+
 ## Gameplay Overview
 
 - **Objective:** Kill as many enemies as you can before the round timer runs out.
